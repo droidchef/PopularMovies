@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by ishan on 23/09/15.
  */
-public class Result {
+public class Movie {
 
 
     @SerializedName("adult")
@@ -305,5 +305,25 @@ public class Result {
      */
     public void setVoteCount(Integer voteCount) {
         this.voteCount = voteCount;
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "adult=" + adult +
+                ", backdropPath='" + backdropPath + '\'' +
+                ", genreIds=" + genreIds +
+                ", id=" + id +
+                ", originalLanguage='" + originalLanguage + '\'' +
+                ", originalTitle='" + originalTitle + '\'' +
+                ", overview='" + overview + '\'' +
+                ", releaseDate='" + releaseDate + '\'' +
+                ", posterPath='" + posterPath + '\'' +
+                ", popularity=" + popularity +
+                ", title='" + title + '\'' +
+                ", video=" + video +
+                ", voteAverage=" + voteAverage +
+                ", voteCount=" + voteCount +
+                '}';
     }
 }

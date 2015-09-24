@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-import in.ishankhanna.popularmovies.models.Result;
+import in.ishankhanna.popularmovies.models.Movie;
 
 /**
  * Created by ishan on 23/09/15.
@@ -20,14 +20,13 @@ import in.ishankhanna.popularmovies.models.Result;
 public class MovieTilesAdapter extends BaseAdapter {
 
     private Context mContext;
-    private List<Result> moviesList = new ArrayList<>();
+    private List<Movie> moviesList = new ArrayList<>();
     private int widthPixels;
-    public MovieTilesAdapter(Context context, List<Result> moviesList, int widthPixels) {
+    public MovieTilesAdapter(Context context, List<Movie> moviesList, int widthPixels) {
         this.mContext = context;
         this.moviesList = moviesList;
         this.widthPixels = widthPixels;
     }
-
 
     @Override
     public int getCount() {
@@ -60,10 +59,9 @@ public class MovieTilesAdapter extends BaseAdapter {
         }
 
         Picasso.with(mContext)
-                .load("http://image.tmdb.org/t/p/" + "w780" + ((Result)getItem(position)).getBackdropPath())
+                .load("http://image.tmdb.org/t/p/" + "w780" + ((Movie)getItem(position)).getBackdropPath())
                         .into(imageView);
         return imageView;
-
 
     }
 }
