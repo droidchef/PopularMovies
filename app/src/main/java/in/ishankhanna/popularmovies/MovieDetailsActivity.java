@@ -1,16 +1,43 @@
 package in.ishankhanna.popularmovies;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
+import in.ishankhanna.popularmovies.models.Movie;
 
 public class MovieDetailsActivity extends AppCompatActivity {
+
+    private static final String TAG = "DetailsActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
+
+        Movie movie = getIntent().getParcelableExtra("movie");
+        Log.d(TAG, movie.toString());
+        ImageView ivMovieThumbnail = (ImageView) findViewById(R.id.iv_movie_thumbnail);
+        TextView tvMovieTitle = (TextView) findViewById(R.id.tv_movie_title);
+        TextView tvMovieSynopsis = (TextView) findViewById(R.id.tv_movie_synopsis);
+        TextView tvReleaseDate = (TextView) findViewById(R.id.tv_release_date);
+        RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBar);
+
+        Picasso.with(MovieDetailsActivity.this)
+                .load("http://image.tmdb.org/t/p/" + "w780" + movie.getBackdropPath())
+                .into(ivMovieThumbnail);
+
+        tvMovieTitle.setText(movie.getOriginalTitle());
+        tvMovieSynopsis.setText(movie.getOverview());
+        tvReleaseDate.setText("Release Date : " + movie.getReleaseDate());
+        ratingBar.setRating((float)(movie.getVoteAverage()/2.00));
     }
 
     @Override

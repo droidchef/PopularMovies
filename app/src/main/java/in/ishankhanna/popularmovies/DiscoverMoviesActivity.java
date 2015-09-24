@@ -1,5 +1,6 @@
 package in.ishankhanna.popularmovies;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -57,6 +58,11 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Log.d(TAG, movies.get(position).toString());
+
+                        Intent detailsActivityIntent = new Intent(DiscoverMoviesActivity.this, MovieDetailsActivity.class);
+                        detailsActivityIntent.putExtra("movie", movies.get(position));
+                        startActivity(detailsActivityIntent);
+
                     }
                 });
 

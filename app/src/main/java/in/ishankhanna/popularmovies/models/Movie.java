@@ -1,5 +1,8 @@
 package in.ishankhanna.popularmovies.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,7 +12,7 @@ import java.util.List;
 /**
  * Created by ishan on 23/09/15.
  */
-public class Movie {
+public class Movie implements Parcelable{
 
 
     @SerializedName("adult")
@@ -326,4 +329,41 @@ public class Movie {
                 ", voteCount=" + voteCount +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(originalTitle);
+        dest.writeString(overview);
+        dest.writeString(releaseDate);
+        dest.writeDouble(popularity);
+        dest.writeDouble(voteAverage);
+        dest.writeString(backdropPath);
+    }
+
+    private Movie(Parcel in) {
+        this.originalTitle = in.readString();
+        this.overview = in.readString();
+        this.releaseDate = in.readString();
+        this.popularity = in.readDouble();
+        this.voteAverage = in.readDouble();
+        this.backdropPath = in.readString();
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
+
+        @Override
+        public Movie createFromParcel(Parcel source) {
+            return new Movie(source);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 }
