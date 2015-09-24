@@ -38,42 +38,9 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover_movies);
 
-        // pixels, dpi
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int heightPixels = metrics.heightPixels;
-        final int widthPixels = metrics.widthPixels;
-
         moviesGridView = (GridView) findViewById(R.id.gridViewMovies);
 
-        API.mMoviesService.getLatestsMoviesInDecreasingOrderOfPopularity(new Callback<MovieDbResponse>() {
-            @Override
-            public void success(MovieDbResponse movieDbResponse, Response response) {
-
-                Log.d(TAG, "Movies Fetched : " + movieDbResponse.getMovies().size());
-                movies = movieDbResponse.getMovies();
-                movieTilesAdapter = new MovieTilesAdapter(getApplicationContext(), movies, widthPixels);
-                moviesGridView.setAdapter(movieTilesAdapter);
-                moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Log.d(TAG, movies.get(position).toString());
-
-                        Intent detailsActivityIntent = new Intent(DiscoverMoviesActivity.this, MovieDetailsActivity.class);
-                        detailsActivityIntent.putExtra("movie", movies.get(position));
-                        startActivity(detailsActivityIntent);
-
-                    }
-                });
-
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-
-            }
-        });
-
+        inflateMoviesGridByDataFromNetwork("popularity.desc");
     }
 
     @Override
@@ -110,12 +77,49 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
     private void sortMoviesGrid(int sortBy) {
 
         switch(sortBy) {
-            case SORT_BY_POPULARITY: sortMoviesByPopularity();
+            case SORT_BY_POPULARITY: inflateMoviesGridByDataFromNetwork("popularity.desc");
                 break;
-            case SORT_BY_RATING: sortMoviesByRating();
+            case SORT_BY_RATING: inflateMoviesGridByDataFromNetwork("vote_average.desc");
                 break;
         }
 
-        movieTilesAdapter.notifyDataSetChanged();
+    }
+
+    private void inflateMoviesGridByDataFromNetwork(String sortBy) {
+
+        // pixels, dpi
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int heightPixels = metrics.heightPixels;
+        final int widthPixels = metrics.widthPixels;
+
+
+        API.mMoviesService.getLatestsMoviesInDecreasingOrderOfPopularity(sortBy, new Callback<MovieDbResponse>() {
+            @Override
+            public void success(MovieDbResponse movieDbResponse, Response response) {
+
+                Log.d(TAG, "Movies Fetched : " + movieDbResponse.getMovies().size());
+                movies = movieDbResponse.getMovies();
+                movieTilesAdapter = new MovieTilesAdapter(getApplicationContext(), movies, widthPixels);
+                moviesGridView.setAdapter(movieTilesAdapter);
+                moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Log.d(TAG, movies.get(position).toString());
+
+                        Intent detailsActivityIntent = new Intent(DiscoverMoviesActivity.this, MovieDetailsActivity.class);
+                        detailsActivityIntent.putExtra("movie", movies.get(position));
+                        startActivity(detailsActivityIntent);
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
     }
 }

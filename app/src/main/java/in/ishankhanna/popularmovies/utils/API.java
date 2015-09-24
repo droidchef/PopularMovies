@@ -5,6 +5,7 @@ import in.ishankhanna.popularmovies.models.MovieDbResponse;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.http.GET;
+import retrofit.http.Query;
 
 /**
  * Created by ishan on 23/09/15.
@@ -96,8 +97,8 @@ public class API {
      */
     public interface MoviesService {
 
-        @GET("/discover/movie?sort_by=popularity.desc&api_key=" + YOUR_API_KEY)
-        void getLatestsMoviesInDecreasingOrderOfPopularity(Callback<MovieDbResponse> movieDbResponseCallback);
+        @GET("/discover/movie?api_key=" + YOUR_API_KEY)
+        void getLatestsMoviesInDecreasingOrderOfPopularity(@Query("sort_by")String sortBy, Callback<MovieDbResponse> movieDbResponseCallback);
 
     }
 
