@@ -94,7 +94,7 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
         final int widthPixels = metrics.widthPixels;
 
 
-        API.mMoviesService.getLatestsMoviesInDecreasingOrderOfPopularity(sortBy, new Callback<MovieDbResponse>() {
+        API.mMoviesService.getLatestMoviesInDecreasingOrderOfPopularity(sortBy, new Callback<MovieDbResponse>() {
             @Override
             public void success(MovieDbResponse movieDbResponse, Response response) {
 

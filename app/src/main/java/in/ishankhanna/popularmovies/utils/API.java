@@ -98,7 +98,7 @@ public class API {
     public interface MoviesService {
 
         @GET("/discover/movie?api_key=" + YOUR_API_KEY)
-        void getLatestsMoviesInDecreasingOrderOfPopularity(@Query("sort_by")String sortBy, Callback<MovieDbResponse> movieDbResponseCallback);
+        void getLatestMoviesInDecreasingOrderOfPopularity(@Query("sort_by") String sortBy, Callback<MovieDbResponse> movieDbResponseCallback);
 
     }
 
