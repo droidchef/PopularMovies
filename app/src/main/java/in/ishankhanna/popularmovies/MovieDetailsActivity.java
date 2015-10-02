@@ -1,17 +1,33 @@
 package in.ishankhanna.popularmovies;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import in.ishankhanna.popularmovies.models.Movie;
+import in.ishankhanna.popularmovies.models.Video;
+import in.ishankhanna.popularmovies.models.VideoResponse;
+import in.ishankhanna.popularmovies.utils.API;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class MovieDetailsActivity extends AppCompatActivity {
 
@@ -37,7 +53,45 @@ public class MovieDetailsActivity extends AppCompatActivity {
         tvMovieTitle.setText(movie.getOriginalTitle());
         tvMovieSynopsis.setText(movie.getOverview());
         tvReleaseDate.setText("Release Date : " + movie.getReleaseDate());
-        ratingBar.setRating((float)(movie.getVoteAverage()/2.00));
+        ratingBar.setRating((float) (movie.getVoteAverage() / 2.00));
+
+        final ListView lvTrailers = (ListView) findViewById(R.id.lv_trailers);
+
+        API.mMoviesService.getTrailersForAMovie(movie.getId(), new Callback<VideoResponse>() {
+            @Override
+            public void success(final VideoResponse videoResponse, Response response) {
+
+                if (videoResponse != null) {
+                    List<String> trailerNamesList = new ArrayList<>();
+                    for (Video video : videoResponse.getResults()) {
+                        Log.d(TAG, video.getName());
+                        trailerNamesList.add(video.getName());
+                    }
+
+                    if (trailerNamesList.size() > 0) {
+                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(MovieDetailsActivity.this, android.R.layout.simple_list_item_1, trailerNamesList);
+                        lvTrailers.setAdapter(arrayAdapter);
+
+                        lvTrailers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                                watchYoutubeVideo(videoResponse.getResults().get(position).getKey());
+
+                            }
+                        });
+
+                    }
+                }
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+
     }
 
     @Override
@@ -60,5 +114,20 @@ public class MovieDetailsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Starts the Youtube video in the Youtube App or the Web View.
+     * @param id
+     */
+    private void watchYoutubeVideo(String id){
+        try{
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
+            startActivity(intent);
+        }catch (ActivityNotFoundException ex){
+            Intent intent=new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://www.youtube.com/watch?v="+id));
+            startActivity(intent);
+        }
     }
 }

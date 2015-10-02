@@ -337,6 +337,7 @@ public class Movie implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
         dest.writeString(originalTitle);
         dest.writeString(overview);
         dest.writeString(releaseDate);
@@ -346,6 +347,7 @@ public class Movie implements Parcelable{
     }
 
     private Movie(Parcel in) {
+        this.id = in.readInt();
         this.originalTitle = in.readString();
         this.overview = in.readString();
         this.releaseDate = in.readString();

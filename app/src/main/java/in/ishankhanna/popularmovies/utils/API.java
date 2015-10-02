@@ -2,9 +2,11 @@ package in.ishankhanna.popularmovies.utils;
 
 import in.ishankhanna.popularmovies.BuildConfig;
 import in.ishankhanna.popularmovies.models.MovieDbResponse;
+import in.ishankhanna.popularmovies.models.VideoResponse;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.http.GET;
+import retrofit.http.Path;
 import retrofit.http.Query;
 
 /**
@@ -100,6 +102,8 @@ public class API {
         @GET("/discover/movie?api_key=" + YOUR_API_KEY)
         void getLatestMoviesInDecreasingOrderOfPopularity(@Query("sort_by") String sortBy, Callback<MovieDbResponse> movieDbResponseCallback);
 
+        @GET("/movie/{id}/videos?api_key=" + YOUR_API_KEY)
+        void getTrailersForAMovie(@Path("id") Integer id, Callback<VideoResponse> videoResponseCallback);
     }
 
 
