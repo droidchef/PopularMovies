@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -68,6 +69,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         final ListView lvTrailers = (ListView) findViewById(R.id.lv_trailers);
         final List<String> trailerNamesList = new ArrayList<>();
+        enableNestedScrolling(lvTrailers);
         API.mMoviesService.getTrailersForAMovie(movie.getId(), new Callback<VideoResponse>() {
             @Override
             public void success(final VideoResponse videoResponse, Response response) {
@@ -105,6 +107,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         final ListView lvReviews = (ListView) findViewById(R.id.lv_reviews);
         final List<String> reviewAuthorList = new ArrayList<>();
+        enableNestedScrolling(lvReviews);
         API.mMoviesService.getReviewsForAMovie(movie.getId(), new Callback<ReviewResponse>() {
             @Override
             public void success(final ReviewResponse reviewResponse, Response response) {
@@ -187,5 +190,31 @@ public class MovieDetailsActivity extends AppCompatActivity {
                     Uri.parse("http://www.youtube.com/watch?v="+id));
             startActivity(intent);
         }
+    }
+
+    private void enableNestedScrolling(ListView listView) {
+
+        listView.setOnTouchListener(new ListView.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Disallow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        // Allow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+
+                // Handle ListView touch events.
+                v.onTouchEvent(event);
+                return true;
+            }
+        });
+
     }
 }
