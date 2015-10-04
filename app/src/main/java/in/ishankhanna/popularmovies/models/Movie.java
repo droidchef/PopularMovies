@@ -14,6 +14,9 @@ import java.util.List;
  */
 public class Movie implements Parcelable{
 
+    public Movie() {
+
+    }
 
     @SerializedName("adult")
     @Expose
@@ -343,7 +346,7 @@ public class Movie implements Parcelable{
         dest.writeString(releaseDate);
         dest.writeDouble(popularity);
         dest.writeDouble(voteAverage);
-        dest.writeString(backdropPath);
+        dest.writeString(posterPath);
     }
 
     private Movie(Parcel in) {
@@ -353,7 +356,7 @@ public class Movie implements Parcelable{
         this.releaseDate = in.readString();
         this.popularity = in.readDouble();
         this.voteAverage = in.readDouble();
-        this.backdropPath = in.readString();
+        this.posterPath = in.readString();
     }
 
     public static final Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {

@@ -1,12 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".DiscoverMovies">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/action_sort_by_popularity" android:title="@string/sort_by_popularity"
         android:orderInCategory="1000" app:showAsAction="never" />
     <item android:id="@+id/action_sort_by_rating" android:title="@string/sort_by_rating"
         android:orderInCategory="1001" app:showAsAction="never" />
-
+    <item android:id="@+id/action_show_favorites" android:title="@string/show_favorites"
+        android:orderInCategory="1002" app:showAsAction="never" />
 
 </menu>

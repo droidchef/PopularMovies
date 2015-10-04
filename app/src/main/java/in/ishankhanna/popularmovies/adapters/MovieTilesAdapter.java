@@ -59,7 +59,7 @@ public class MovieTilesAdapter extends BaseAdapter {
         }
 
         Picasso.with(mContext)
-                .load("http://image.tmdb.org/t/p/" + "w780" + ((Movie)getItem(position)).getBackdropPath())
+                .load("http://image.tmdb.org/t/p/" + "w185" + ((Movie)getItem(position)).getPosterPath())
                         .into(imageView);
         return imageView;
 

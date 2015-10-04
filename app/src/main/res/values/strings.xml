@@ -6,4 +6,5 @@
     <string name="sort_by_popularity">Sort By Popularity</string>
     <string name="sort_by_rating">Sort By Rating</string>
     <string name="title_activity_movie_details">MovieDetailsActivity</string>
+    <string name="show_favorites">Show Favorites</string>
 </resources>

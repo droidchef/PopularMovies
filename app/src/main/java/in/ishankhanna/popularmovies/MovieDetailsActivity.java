@@ -15,12 +15,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import in.ishankhanna.popularmovies.db.MovieDAO;
 import in.ishankhanna.popularmovies.models.Movie;
 import in.ishankhanna.popularmovies.models.Review;
 import in.ishankhanna.popularmovies.models.ReviewResponse;
@@ -36,13 +38,13 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private static final String TAG = "DetailsActivity";
     private VideoResponse videoResponse;
     private ReviewResponse reviewResponse;
-
+    private Movie movie;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
 
-        Movie movie = getIntent().getParcelableExtra("movie");
+        movie = getIntent().getParcelableExtra("movie");
         Log.d(TAG, movie.toString());
         ImageView ivMovieThumbnail = (ImageView) findViewById(R.id.iv_movie_thumbnail);
         TextView tvMovieTitle = (TextView) findViewById(R.id.tv_movie_title);
@@ -51,7 +53,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
         TextView tv_rating = (TextView) findViewById(R.id.tv_rating);
 
         Picasso.with(MovieDetailsActivity.this)
-                .load("http://image.tmdb.org/t/p/" + "w185" + movie.getBackdropPath())
+                .load("http://image.tmdb.org/t/p/" + "w185" + movie.getPosterPath())
                 .resize(200,300)
                 .into(ivMovieThumbnail);
 
@@ -160,10 +162,15 @@ public class MovieDetailsActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_favorite) {
+            MovieDAO movieDAO = new MovieDAO(this);
+            movieDAO.open();
+            Movie m = movieDAO.saveMovie(movie);
+            if (m != null && m.getOriginalTitle().equals(movie.getOriginalTitle())) {
+                Toast.makeText(this, "Movie Added to Favorites", Toast.LENGTH_SHORT).show();
+            }
+            movieDAO.close();
         }
-
         return super.onOptionsItemSelected(item);
     }
 

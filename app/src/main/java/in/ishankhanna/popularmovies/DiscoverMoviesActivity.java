@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import in.ishankhanna.popularmovies.adapters.MovieTilesAdapter;
+import in.ishankhanna.popularmovies.db.MovieDAO;
 import in.ishankhanna.popularmovies.models.Movie;
 import in.ishankhanna.popularmovies.models.MovieResponse;
 import in.ishankhanna.popularmovies.utils.API;
@@ -28,11 +29,16 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
     private final String TAG = "DiscoverMoviesActivity";
     private final static int SORT_BY_RATING = 1;
     private final static int SORT_BY_POPULARITY = 2;
+    private final static int SORT_BY_FAVORITES = 3;
 
+    private final static String SORT_STRING_POPULARITY = "popularity.desc";
+    private final static String SORT_STRING_VOTE_AVERAGE = "vote_average.desc";
+    private final static String SORT_STRING_DEFAULT = SORT_STRING_POPULARITY;
 
     GridView moviesGridView;
     MovieTilesAdapter movieTilesAdapter;
     List<Movie> movies;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +46,7 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
 
         moviesGridView = (GridView) findViewById(R.id.gridViewMovies);
 
-        inflateMoviesGridByDataFromNetwork("popularity.desc");
+        inflateMoviesGridByDataFromNetwork(SORT_STRING_DEFAULT);
     }
 
     @Override
@@ -62,6 +68,7 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
                 break;
             case R.id.action_sort_by_rating: sortMoviesGrid(SORT_BY_RATING);
                 break;
+            case R.id.action_show_favorites: sortMoviesGrid(SORT_BY_FAVORITES);
         }
 
         return super.onOptionsItemSelected(item);
@@ -77,10 +84,11 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
     private void sortMoviesGrid(int sortBy) {
 
         switch(sortBy) {
-            case SORT_BY_POPULARITY: inflateMoviesGridByDataFromNetwork("popularity.desc");
+            case SORT_BY_POPULARITY: inflateMoviesGridByDataFromNetwork(SORT_STRING_POPULARITY);
                 break;
-            case SORT_BY_RATING: inflateMoviesGridByDataFromNetwork("vote_average.desc");
+            case SORT_BY_RATING: inflateMoviesGridByDataFromNetwork(SORT_STRING_VOTE_AVERAGE);
                 break;
+            case SORT_BY_FAVORITES: inflateMoviesGridByDataFromDatabase();
         }
 
     }
@@ -93,7 +101,6 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
         int heightPixels = metrics.heightPixels;
         final int widthPixels = metrics.widthPixels;
 
-
         API.mMoviesService.getLatestMovies(sortBy, new Callback<MovieResponse>() {
             @Override
             public void success(MovieResponse movieDbResponse, Response response) {
@@ -102,22 +109,43 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
                 movies = movieDbResponse.getMovies();
                 movieTilesAdapter = new MovieTilesAdapter(getApplicationContext(), movies, widthPixels);
                 moviesGridView.setAdapter(movieTilesAdapter);
-                moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Log.d(TAG, movies.get(position).toString());
-
-                        Intent detailsActivityIntent = new Intent(DiscoverMoviesActivity.this, MovieDetailsActivity.class);
-                        detailsActivityIntent.putExtra("movie", movies.get(position));
-                        startActivity(detailsActivityIntent);
-
-                    }
-                });
-
+                setMovieGridItemClickListener();
             }
 
             @Override
             public void failure(RetrofitError error) {
+
+            }
+        });
+    }
+
+    private void inflateMoviesGridByDataFromDatabase() {
+
+        // pixels, dpi
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int heightPixels = metrics.heightPixels;
+        final int widthPixels = metrics.widthPixels;
+        MovieDAO movieDAO = new MovieDAO(this);
+        movieDAO.openForReadOnly();
+        movies = movieDAO.getAllMovies();
+        movieDAO.close();
+        Log.d(TAG, "" + movies.size());
+        movieTilesAdapter = new MovieTilesAdapter(this, movies, widthPixels);
+        moviesGridView.setAdapter(movieTilesAdapter);
+        setMovieGridItemClickListener();
+
+    }
+
+    private void setMovieGridItemClickListener() {
+        moviesGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, movies.get(position).toString());
+
+                Intent detailsActivityIntent = new Intent(DiscoverMoviesActivity.this, MovieDetailsActivity.class);
+                detailsActivityIntent.putExtra("movie", movies.get(position));
+                startActivity(detailsActivityIntent);
 
             }
         });
