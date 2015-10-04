@@ -37,8 +37,6 @@ import retrofit.client.Response;
 public class MovieDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "DetailsActivity";
-    private VideoResponse videoResponse;
-    private ReviewResponse reviewResponse;
     private Movie movie;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +73,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
             public void success(final VideoResponse videoResponse, Response response) {
 
                 if (videoResponse != null) {
-                    MovieDetailsActivity.this.videoResponse = videoResponse;
                     for (Video video : videoResponse.getResults()) {
                         Log.d(TAG, video.getName());
                         trailerNamesList.add(video.getName());
@@ -114,7 +111,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
                 if (reviewResponse != null) {
 
-                    MovieDetailsActivity.this.reviewResponse = reviewResponse;
                     for (Review review : reviewResponse.getReviews()) {
                         reviewAuthorList.add(review.getAuthor());
                     }
