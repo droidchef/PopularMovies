@@ -1,7 +1,9 @@
 package in.ishankhanna.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -47,12 +49,8 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_discover_movies);
 
         moviesGridView = (GridView) findViewById(R.id.gridViewMovies);
-        if (savedInstanceState != null) {
-            currentlySortingBy = savedInstanceState.getInt(KEY_LAST_SORT_BY, SORT_BY_POPULARITY);
-            currentGridPosition = savedInstanceState.getInt(KEY_LAST_GRID_POSITION, 0);
-        } else {
-            currentlySortingBy = SORT_BY_POPULARITY;
-        }
+
+        currentlySortingBy = PreferenceManager.getDefaultSharedPreferences(this).getInt(KEY_LAST_SORT_BY, SORT_BY_POPULARITY);
 
         sortMoviesGrid(currentlySortingBy);
     }
@@ -154,7 +152,6 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
                 Intent detailsActivityIntent = new Intent(DiscoverMoviesActivity.this, MovieDetailsActivity.class);
                 detailsActivityIntent.putExtra("movie", movies.get(position));
                 startActivity(detailsActivityIntent);
-
             }
         });
         if (currentGridPosition >= 0)
@@ -168,4 +165,19 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
         outState.putInt(KEY_LAST_GRID_POSITION, moviesGridView.getFirstVisiblePosition());
     }
 
+    @Override
+    protected void onPause() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(KEY_LAST_SORT_BY, currentlySortingBy);
+        editor.apply();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        currentlySortingBy = sharedPreferences.getInt(KEY_LAST_SORT_BY, SORT_BY_POPULARITY);
+    }
 }
