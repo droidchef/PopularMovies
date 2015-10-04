@@ -26,6 +26,8 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class DiscoverMoviesActivity extends AppCompatActivity {
+    private static final String KEY_LAST_SORT_BY = "last_sort_by";
+    private static final String KEY_LAST_GRID_POSITION = "last_grid_position";
     private final String TAG = "DiscoverMoviesActivity";
     private final static int SORT_BY_RATING = 1;
     private final static int SORT_BY_POPULARITY = 2;
@@ -33,20 +35,26 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
 
     private final static String SORT_STRING_POPULARITY = "popularity.desc";
     private final static String SORT_STRING_VOTE_AVERAGE = "vote_average.desc";
-    private final static String SORT_STRING_DEFAULT = SORT_STRING_POPULARITY;
 
     GridView moviesGridView;
     MovieTilesAdapter movieTilesAdapter;
     List<Movie> movies;
-
+    private int currentlySortingBy = -1;
+    private int currentGridPosition = -1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover_movies);
 
         moviesGridView = (GridView) findViewById(R.id.gridViewMovies);
+        if (savedInstanceState != null) {
+            currentlySortingBy = savedInstanceState.getInt(KEY_LAST_SORT_BY, SORT_BY_POPULARITY);
+            currentGridPosition = savedInstanceState.getInt(KEY_LAST_GRID_POSITION, 0);
+        } else {
+            currentlySortingBy = SORT_BY_POPULARITY;
+        }
 
-        inflateMoviesGridByDataFromNetwork(SORT_STRING_DEFAULT);
+        sortMoviesGrid(currentlySortingBy);
     }
 
     @Override
@@ -82,7 +90,7 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
     }
 
     private void sortMoviesGrid(int sortBy) {
-
+        currentlySortingBy = sortBy;
         switch(sortBy) {
             case SORT_BY_POPULARITY: inflateMoviesGridByDataFromNetwork(SORT_STRING_POPULARITY);
                 break;
@@ -149,5 +157,15 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
 
             }
         });
+        if (currentGridPosition >= 0)
+            moviesGridView.smoothScrollToPosition(currentGridPosition);
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_LAST_SORT_BY, currentlySortingBy);
+        outState.putInt(KEY_LAST_GRID_POSITION, moviesGridView.getFirstVisiblePosition());
+    }
+
 }
