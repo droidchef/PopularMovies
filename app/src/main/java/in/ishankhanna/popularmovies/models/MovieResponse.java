@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by ishan on 23/09/15.
  */
-public class MovieDbResponse {
+public class MovieResponse {
 
     @SerializedName("page")
     @Expose

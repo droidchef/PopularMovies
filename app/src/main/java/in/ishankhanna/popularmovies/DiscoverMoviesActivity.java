@@ -16,7 +16,7 @@ import java.util.List;
 
 import in.ishankhanna.popularmovies.adapters.MovieTilesAdapter;
 import in.ishankhanna.popularmovies.models.Movie;
-import in.ishankhanna.popularmovies.models.MovieDbResponse;
+import in.ishankhanna.popularmovies.models.MovieResponse;
 import in.ishankhanna.popularmovies.utils.API;
 import in.ishankhanna.popularmovies.utils.comparators.MoviePopularityComparator;
 import in.ishankhanna.popularmovies.utils.comparators.MovieRatingComparator;
@@ -94,9 +94,9 @@ public class DiscoverMoviesActivity extends AppCompatActivity {
         final int widthPixels = metrics.widthPixels;
 
 
-        API.mMoviesService.getLatestMoviesInDecreasingOrderOfPopularity(sortBy, new Callback<MovieDbResponse>() {
+        API.mMoviesService.getLatestMovies(sortBy, new Callback<MovieResponse>() {
             @Override
-            public void success(MovieDbResponse movieDbResponse, Response response) {
+            public void success(MovieResponse movieDbResponse, Response response) {
 
                 Log.d(TAG, "Movies Fetched : " + movieDbResponse.getMovies().size());
                 movies = movieDbResponse.getMovies();

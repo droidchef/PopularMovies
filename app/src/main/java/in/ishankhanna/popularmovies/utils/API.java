@@ -1,7 +1,8 @@
 package in.ishankhanna.popularmovies.utils;
 
 import in.ishankhanna.popularmovies.BuildConfig;
-import in.ishankhanna.popularmovies.models.MovieDbResponse;
+import in.ishankhanna.popularmovies.models.MovieResponse;
+import in.ishankhanna.popularmovies.models.ReviewResponse;
 import in.ishankhanna.popularmovies.models.VideoResponse;
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -14,7 +15,7 @@ import retrofit.http.Query;
  */
 public class API {
 
-    private static final String YOUR_API_KEY = "ADD YOUR API KEY HERE";
+    private static final String YOUR_API_KEY = "039bfc199689eb2c4ad9bd602b7bb8ff";
 
     /**
      * Retrofit Log Level to be used by the rest adapter while making requests.
@@ -100,10 +101,14 @@ public class API {
     public interface MoviesService {
 
         @GET("/discover/movie?api_key=" + YOUR_API_KEY)
-        void getLatestMoviesInDecreasingOrderOfPopularity(@Query("sort_by") String sortBy, Callback<MovieDbResponse> movieDbResponseCallback);
+        void getLatestMovies(@Query("sort_by") String sortBy, Callback<MovieResponse> movieDbResponseCallback);
 
         @GET("/movie/{id}/videos?api_key=" + YOUR_API_KEY)
         void getTrailersForAMovie(@Path("id") Integer id, Callback<VideoResponse> videoResponseCallback);
+
+        @GET("/movie/{id}/reviews?api_key=" + YOUR_API_KEY)
+        void getReviewsForAMovie(@Path("id") Integer id, Callback<ReviewResponse> reviewResponseCallback);
+
     }
 
 

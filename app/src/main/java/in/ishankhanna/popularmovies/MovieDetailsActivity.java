@@ -1,5 +1,6 @@
 package in.ishankhanna.popularmovies;
 
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import in.ishankhanna.popularmovies.models.Movie;
+import in.ishankhanna.popularmovies.models.Review;
+import in.ishankhanna.popularmovies.models.ReviewResponse;
 import in.ishankhanna.popularmovies.models.Video;
 import in.ishankhanna.popularmovies.models.VideoResponse;
 import in.ishankhanna.popularmovies.utils.API;
@@ -32,6 +34,8 @@ import retrofit.client.Response;
 public class MovieDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "DetailsActivity";
+    private VideoResponse videoResponse;
+    private ReviewResponse reviewResponse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,25 +48,30 @@ public class MovieDetailsActivity extends AppCompatActivity {
         TextView tvMovieTitle = (TextView) findViewById(R.id.tv_movie_title);
         TextView tvMovieSynopsis = (TextView) findViewById(R.id.tv_movie_synopsis);
         TextView tvReleaseDate = (TextView) findViewById(R.id.tv_release_date);
-        RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBar);
+        TextView tv_rating = (TextView) findViewById(R.id.tv_rating);
 
         Picasso.with(MovieDetailsActivity.this)
-                .load("http://image.tmdb.org/t/p/" + "w780" + movie.getBackdropPath())
+                .load("http://image.tmdb.org/t/p/" + "w185" + movie.getBackdropPath())
+                .resize(200,300)
                 .into(ivMovieThumbnail);
 
         tvMovieTitle.setText(movie.getOriginalTitle());
         tvMovieSynopsis.setText(movie.getOverview());
         tvReleaseDate.setText("Release Date : " + movie.getReleaseDate());
-        ratingBar.setRating((float) (movie.getVoteAverage() / 2.00));
+        try {
+            tv_rating.setText(String.valueOf(movie.getVoteAverage()));
+        } catch (Exception e) {
+            tv_rating.setText("N/A");
+        }
 
         final ListView lvTrailers = (ListView) findViewById(R.id.lv_trailers);
-
+        final List<String> trailerNamesList = new ArrayList<>();
         API.mMoviesService.getTrailersForAMovie(movie.getId(), new Callback<VideoResponse>() {
             @Override
             public void success(final VideoResponse videoResponse, Response response) {
 
                 if (videoResponse != null) {
-                    List<String> trailerNamesList = new ArrayList<>();
+                    MovieDetailsActivity.this.videoResponse = videoResponse;
                     for (Video video : videoResponse.getResults()) {
                         Log.d(TAG, video.getName());
                         trailerNamesList.add(video.getName());
@@ -84,6 +93,48 @@ public class MovieDetailsActivity extends AppCompatActivity {
                     }
                 }
 
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+
+        final ListView lvReviews = (ListView) findViewById(R.id.lv_reviews);
+        final List<String> reviewAuthorList = new ArrayList<>();
+        API.mMoviesService.getReviewsForAMovie(movie.getId(), new Callback<ReviewResponse>() {
+            @Override
+            public void success(final ReviewResponse reviewResponse, Response response) {
+
+                if (reviewResponse != null) {
+
+                    MovieDetailsActivity.this.reviewResponse = reviewResponse;
+                    for (Review review : reviewResponse.getReviews()) {
+                        reviewAuthorList.add(review.getAuthor());
+                    }
+
+                    if (reviewAuthorList.size() > 0) {
+
+                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(MovieDetailsActivity.this, android.R.layout.simple_list_item_1, reviewAuthorList);
+                        lvReviews.setAdapter(arrayAdapter);
+
+                        lvReviews.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                                AlertDialog alertDialog = new AlertDialog.Builder(MovieDetailsActivity.this)
+                                        .setTitle("Review by " + reviewAuthorList.get(position))
+                                        .setMessage(reviewResponse.getReviews().get(position).getContent())
+                                        .create();
+                                alertDialog.show();
+
+                            }
+                        });
+
+                    }
+
+                }
             }
 
             @Override
