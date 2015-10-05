@@ -5,7 +5,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,12 +40,15 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "DetailsActivity";
     private Movie movie;
+    private ShareActionProvider shareActionProvider;
+    private Intent shareIntent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
 
         movie = getIntent().getParcelableExtra("movie");
+
         Log.d(TAG, movie.toString());
         ImageView ivMovieThumbnail = (ImageView) findViewById(R.id.iv_movie_thumbnail);
         TextView tvMovieTitle = (TextView) findViewById(R.id.tv_movie_title);
@@ -73,6 +78,14 @@ public class MovieDetailsActivity extends AppCompatActivity {
             public void success(final VideoResponse videoResponse, Response response) {
 
                 if (videoResponse != null) {
+
+                    if (videoResponse.getResults().size() > 0) {
+                        shareIntent = new Intent(Intent.ACTION_SEND);
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "http://www.youtube.com/watch?v=" + videoResponse.getResults().get(0).getKey());
+                        shareIntent.setType("text/plain");
+                        setShareIntent(shareIntent);
+                    }
+
                     for (Video video : videoResponse.getResults()) {
                         Log.d(TAG, video.getName());
                         trailerNamesList.add(video.getName());
@@ -150,6 +163,10 @@ public class MovieDetailsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_movie_details, menu);
+
+        // Fetch and store ShareActionProvider
+        shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menu.findItem(R.id.menu_item_share));
+
         return true;
     }
 
@@ -169,6 +186,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
                 Toast.makeText(this, "Movie Added to Favorites", Toast.LENGTH_SHORT).show();
             }
             movieDAO.close();
+        } else if(id == R.id.menu_item_share) {
+            Log.d(TAG, "Test");
+            startActivity(shareIntent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -213,4 +233,11 @@ public class MovieDetailsActivity extends AppCompatActivity {
         });
 
     }
+
+    private void setShareIntent(Intent shareIntent) {
+        if (shareActionProvider != null) {
+            shareActionProvider.setShareIntent(shareIntent);
+        }
+    }
+
 }

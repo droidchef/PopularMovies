@@ -91,7 +91,7 @@ public class MovieDAO {
         return movies;
     }
 
-    private Movie cursorToMovie(Cursor cursor) {
+    private static Movie cursorToMovie(Cursor cursor) {
         Movie movie = new Movie();
         movie.setId(cursor.getInt(1));
         movie.setOriginalTitle(cursor.getString(2));
@@ -103,4 +103,17 @@ public class MovieDAO {
         return movie;
     }
 
+    public static List<Movie> getAllMovies(Cursor cursor) {
+
+        List<Movie> movies = new ArrayList<>();
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            Movie movie = cursorToMovie(cursor);
+            movies.add(movie);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return movies;
+
+    }
 }

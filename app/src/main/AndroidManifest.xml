@@ -27,11 +27,10 @@
                 android:value="in.ishankhanna.popularmovies.DiscoverMoviesActivity" />
         </activity>
 
-        <meta-data android:name="DATABASE" android:value="popular_movies.db" />
-        <meta-data android:name="VERSION" android:value="1" />
-        <meta-data android:name="QUERY_LOG" android:value="true" />
-        <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="in.ishankhanna.popularmovies.models" />
-
+        <provider
+            android:name=".providers.MovieContentProvider"
+            android:authorities="in.ishankhanna.popularmovies.providers" >
+        </provider>
     </application>
 
 </manifest>
