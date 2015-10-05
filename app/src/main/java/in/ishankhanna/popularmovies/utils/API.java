@@ -15,7 +15,7 @@ import retrofit.http.Query;
  */
 public class API {
 
-    private static final String YOUR_API_KEY = "039bfc199689eb2c4ad9bd602b7bb8ff";
+    private static final String YOUR_API_KEY = "YOUR-API-KEY-HERE";
 
     /**
      * Retrofit Log Level to be used by the rest adapter while making requests.

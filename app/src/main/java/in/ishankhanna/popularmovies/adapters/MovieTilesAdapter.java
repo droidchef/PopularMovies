@@ -52,8 +52,8 @@ public class MovieTilesAdapter extends BaseAdapter {
             imageView = new ImageView(mContext);
             int width = widthPixels / 2;
             int height = (int) (width * 1.2);
-            imageView.setLayoutParams(new GridView.LayoutParams(width, height));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setLayoutParams(new GridView.LayoutParams(GridView.LayoutParams.MATCH_PARENT, GridView.LayoutParams.WRAP_CONTENT));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         } else {
             imageView = (ImageView) convertView;
         }
